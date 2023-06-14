@@ -39,21 +39,21 @@ func (cr *courseAPI) AddCourse(c *gin.Context) {
 
 func (cr *courseAPI) DeleteCourse(c *gin.Context) {
 	// TODO: answer here
-	courseID, err := strconv.Atoi(c.Param("id"))
+	courseID, err := strconv.Atoi(c.Param("course_id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	_, err = cr.courseRepo.FetchByID(courseID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, model.ErrorResponse{Error: err.Error()})
 		return
 	}
 
 	err = cr.courseRepo.Delete(courseID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{Error: err.Error()})
-		return
-	}
-
-	_, err = cr.courseRepo.FetchByID(courseID)
-	if err == nil {
-		c.JSON(http.StatusNotFound, model.ErrorResponse{Error: err.Error()})
 		return
 	}
 

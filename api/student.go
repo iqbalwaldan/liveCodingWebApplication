@@ -46,15 +46,14 @@ func (s *studentAPI) DeleteStudent(c *gin.Context) {
 		return
 	}
 
+	_, err = s.studentRepo.FetchByID(studentID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, model.ErrorResponse{Error: err.Error()})
+		return
+	}
 	err = s.studentRepo.Delete(studentID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{Error: err.Error()})
-		return
-	}
-
-	_, err = s.studentRepo.FetchByID(studentID)
-	if err == nil {
-		c.JSON(http.StatusNotFound, model.ErrorResponse{Error: err.Error()})
 		return
 	}
 
